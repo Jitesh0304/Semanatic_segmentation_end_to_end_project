@@ -1,0 +1,16 @@
+IMAGE_SIZE: [512, 512, 3]            # as per VGG 16 model
+BATCH_SIZE: 10
+EPOCHS: 10
+CLASSES: 10
+LEARNING_RATE: 0.01
+BACKBONE: resnet34
+
+
+for_callback_only:
+  monitor: val_iou_score
+  patience: 3
+  mode: max
+  restore_best_weights: True
+  min_delta: 0.03
+  factor: 0.5
+  min_learningrate: 0.00001

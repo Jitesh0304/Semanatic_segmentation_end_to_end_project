@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Segmentation</title>
+    <style>
+        /* Split the screen into two columns */
+        .split {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Set each column to 50% width */
+        .column {
+            width: 50%;
+        }
+
+        /* Set image size to fit within the column */
+        .column img {
+            max-width: 100%;
+            max-height: 512px; /* Set maximum height to 512 pixels to maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Segmentation</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" accept="image/*" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    <div class="split">
+        <div class="column" id="imageDisplay" style="display: none;">
+            <h2>Uploaded Image</h2>
+            <!-- Set width and height to 512 pixels to display the image at 512x512 size -->
+            <img id="uploadedImage" src="#" alt="Uploaded Image" width="512" height="512">
+        </div>
+
+        <div class="column" id="segmentedDisplay" style="display: none;">
+            <h2>Segmented Image</h2>
+            <!-- Set width and height to 512 pixels to display the segmented image at 512x512 size -->
+            <img id="segmentedImage" src="#" alt="Segmented Image">
+        </div>
+    </div>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        const uploadForm = document.getElementById('uploadForm');
+        const imageInput = document.getElementById('imageInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const segmentedDisplay = document.getElementById('segmentedDisplay');
+        const segmentedImage = document.getElementById('segmentedImage');
+
+        uploadForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            fetch('/segment', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken  // Include the CSRF token in the headers
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadedImage.src = URL.createObjectURL(imageInput.files[0]);
+                imageDisplay.style.display = 'block';
+                segmentedDisplay.style.display = 'block';
+                segmentedImage.src = 'data:image/png;base64,' + data.segmented_image;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+{% comment %} ############## This code will show you only segmented image ###################### {% endcomment %}
+
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>Image Segmentation</title>
+</head>
+<body>
+    <h1>Image Segmentation</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" accept="image/*" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    {% if processed_image_string %}
+        <h2>Segmented Image</h2>
+        <!-- Display the segmented image using base64 data URI -->
+        <img src="data:image/png;base64,{{ processed_image_string }}" alt="Segmented Image">
+    {% endif %}
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+            {% comment %} ########## This code will show you both images one after another #############3 {% endcomment %}
+            
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>Image Segmentation</title>
+</head>
+<body>
+    <h1>Image Segmentation</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" id="imageInput" accept="image/*" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    <div id="imageDisplay" style="display: none;">
+        <h2>Uploaded Image</h2>
+        <img id="uploadedImage" src="#" alt="Uploaded Image" width="512" height="512">
+    </div>
+
+    <div id="segmentedDisplay" style="display: none;">
+        <h2>Segmented Image</h2>
+        <img id="segmentedImage" src="#" alt="Segmented Image">
+    </div>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        const uploadForm = document.getElementById('uploadForm');
+        const imageInput = document.getElementById('imageInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const segmentedDisplay = document.getElementById('segmentedDisplay');
+        const segmentedImage = document.getElementById('segmentedImage');
+
+        uploadForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            fetch('/segment', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken  // Include the CSRF token in the headers
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadedImage.src = URL.createObjectURL(imageInput.files[0]);
+                imageDisplay.style.display = 'block';
+                segmentedDisplay.style.display = 'block';
+                segmentedImage.src = 'data:image/png;base64,' + data.segmented_image;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html> {% endcomment %}
